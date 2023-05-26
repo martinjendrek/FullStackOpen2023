@@ -1,0 +1,10 @@
+sequenceDiagram
+    participant browser
+    participant server
+
+browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+    Note left of server: even handler pushed data (represented in JSON format) and rerenders notes list
+    activate server
+    
+    server-->>browser: status code 201 created
+    deactivate server
