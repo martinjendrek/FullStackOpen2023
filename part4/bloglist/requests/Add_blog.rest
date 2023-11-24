@@ -2,9 +2,9 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
-"title": "Gudzianowski Chad",
-"author": "Gaga Bobson",
-"url": "www.Biceblog.com",
-"likes": 200
+"title": "Economy with John",
+"author": "John Kowalski",
+"url": "www.EcoJohn.com",
+"likes": 20
 }
 ###

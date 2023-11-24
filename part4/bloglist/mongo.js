@@ -22,15 +22,23 @@ const blogSchema = new mongoose.Schema({
   url: String,
   likes: Number
 })
+blogSchema.set('toJSON', {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString()
+    delete returnedObject._id
+    delete returnedObject.__v
+  }
+})
 
 Blog = mongoose.model('Blog', blogSchema)
 
 const blog = new Blog({
-    title: "Pudzianowski Chad",
-    author: "Aga Bobson",
-    url: "www.Niceblog.com",
-    likes: 100,
+    title: "Gudzianowski Chad",
+    author: "Mariannaa Bobson",
+    url: "www.altenmaria.com",
+    likes: 11,
 })
+
 
 /* 
 blog.save().then(result =>{
