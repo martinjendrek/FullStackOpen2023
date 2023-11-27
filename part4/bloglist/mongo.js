@@ -40,17 +40,18 @@ const blog = new Blog({
 })
 
 
-/* 
+
 blog.save().then(result =>{
   console.log('note saved!')
   mongoose.connection.close()
 })
- */
 
 
+/* 
 Blog.find({}).then(result => {
   result.forEach(note => {
     console.log(note)
   })
   mongoose.connection.close()
 })
+ */
