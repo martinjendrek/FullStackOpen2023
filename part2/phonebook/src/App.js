@@ -97,6 +97,10 @@ const App = () => {
           setAddMessage(`${newName} phonenumber changed succesfully`)
           setTimeout( () => setAddMessage(null), 3000)
         })
+        .catch(error => {
+          setAddMessage(`error: ${error.response.data.error}`)
+          setTimeout( () => setAddMessage(null), 3000)
+        })
       } else {console.log('window confirmation canceled')}
       return;
     }
@@ -111,10 +115,14 @@ const App = () => {
         setAddMessage(`${newName} phonenumber added succesfully`)
         setTimeout( () => setAddMessage(null), 3000)
       })
+      .catch(error => {
+        setAddMessage(`error: ${error.response.data.error}`)
+        setTimeout( () => setAddMessage(null), 3000)
+      })
   }
     //---------------------------------------------------------------------
     // DELETE request. 
-    // Function deleteFunction is based as props through App->Content--(map)--->Position
+    // Function deleteFunction is passed as props through App->Content--(map)--->Position
     // so it is available to call for every Position in book
   const deleteFunction = (name,personid) => {
     if (window.confirm(`Delete ${name}?`)) {
