@@ -3,7 +3,7 @@ const usersRouter = require('express').Router()
 const User = require('../models/user')
 
 usersRouter.get('/', async (request, response,) => {
-  const users = await User.find({})
+  const users = await User.find({}).populate('blogs', 'title author url ')
   response.json(users)
 })
 
@@ -15,7 +15,6 @@ usersRouter.post('/', async (request, response, next) => {
       error: 'Password shold have min 3 characters' 
     })
   }
-
   //hash password using bcrypt library
   const saltRounds = 10
   const passwordHash = await bcrypt.hash(password, saltRounds)
