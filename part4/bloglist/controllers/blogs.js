@@ -2,6 +2,7 @@ const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 const User = require('../models/user')
 const jwt = require('jsonwebtoken')
+const { userExtractor } = require('../utils/middleware')
 
 blogsRouter.get('/', async (request, response,) => {
   const blogs = await Blog.find({}).populate('user','username name')
@@ -10,16 +11,11 @@ blogsRouter.get('/', async (request, response,) => {
 
 
 
-blogsRouter.post('/', async (request, response, next) => {
+blogsRouter.post('/', userExtractor, async (request, response, next) => {
   const { title, author, url, likes } = request.body
   // request.token is provided by middleware tokenExtractor
   try {
-    const decodedToken = jwt.verify(request.token, process.env.SECRET);
-    if (!decodedToken.id) {
-      return response.status(401).json({ error: 'token invalid' });
-    }
-    // Fetch any user from the database
-    const user = await User.findById(decodedToken.id)
+    const user = request.user
     const blog = new Blog({
       title,
       author,
@@ -37,18 +33,15 @@ blogsRouter.post('/', async (request, response, next) => {
   }
 })
 
-blogsRouter.delete('/:id', async (request, response) => {
+blogsRouter.delete('/:id', userExtractor, async (request, response) => {
   try {
-    const decodedToken = jwt.verify(request.token, process.env.SECRET)
-    if (!decodedToken.id) {
-      return response.status(401).json({ error: 'token invalid' })
-    }
+    const user = request.user;
     const blog = await Blog.findById(request.params.id)
     if (!blog) {
       return response.status(404).json({ error: 'Blog not found' })
     }
     // Check if the user making the request is the creator of the blog
-    if (decodedToken.id !== blog.user.toString()) {
+    if (user.id !== blog.user.toString()) {
       return response.status(403).json({ error: 'Forbidden: You are not the creator of this blog' })
     }
     // If the user is the creator, delete the blog
