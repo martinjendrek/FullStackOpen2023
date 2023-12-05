@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const bcrypt = require('bcrypt')
-
+const jwt = require('jsonwebtoken')
 const app = require('../app')
 const api = supertest(app)
 const Blog = require('../models/blog')
@@ -58,7 +58,15 @@ describe('When there is initially some blogs saved', () => {
           url: "www.pormech.pl",
           likes: 5,
         }
+      const user = await User.findOne({})
+      const userForToken = {
+        username: user.username, 
+        id: user.id
+      }
+      const token = jwt.sign(userForToken, process.env.SECRET)
+
       const response = await api.post('/api/blogs')
+        .set({ 'Authorization': `Bearer ${token}` })  
         .send(newBlog)
         .expect(201)
         .expect('Content-Type', /application\/json/)
@@ -79,7 +87,14 @@ describe('When there is initially some blogs saved', () => {
           author: "Andrzej Mechanik",
           url: "www.pormech.pl"
         }
+      const user = await User.findOne({})
+      const userForToken = {
+          username: user.username, 
+          id: user.id
+        }
+      const token = jwt.sign(userForToken, process.env.SECRET)
       const response = await api.post('/api/blogs')
+        .set({ 'Authorization': `Bearer ${token}` })  
         .send(newBlog)
         .expect(201)
         .expect('Content-Type', /application\/json/)
