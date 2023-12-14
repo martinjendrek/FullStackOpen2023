@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
+import CreateNewBlogForm from './components/CreateNewBlogForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -12,6 +13,7 @@ const App = () => {
   const [password, setPassword] = useState('') 
   const [user, setUser] = useState(null)
   const [newBlog, setNewBlog] = useState({ title: '', author: '', url: '' })
+  const [showCreateForm, setShowCreateForm] = useState(false)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -76,8 +78,9 @@ const App = () => {
           setSuccessMessage(null)
         }, 5000)
       setNewBlog({ title: '', author: '', url: '' })
+      setShowCreateForm(!showCreateForm)
       blogService.getAll().then((updatedBlogs) => {
-        setBlogs(updatedBlogs);
+        setBlogs(updatedBlogs)
       })
     }
     )
@@ -114,39 +117,16 @@ const App = () => {
   const blogForm = () => (
     <div>
       <h2>Blogs</h2>
-      <p>{user.username} is logged in</p>
-      <button onClick={handleLogout}>logout</button>
-      <h2>Create new</h2>
-      <form onSubmit={handleBlogCreate}>
-        <div>
-          title
-            <input
-            type="text"
-            value={newBlog.title}
-            name="BlogTitle"
-            onChange={({ target }) => setNewBlog({ ...newBlog, title: target.value })}
-          />
-        </div>
-        <div>
-          author
-            <input
-            type="text"
-            value={newBlog.author}
-            name="BlogAuthor"
-            onChange={({ target }) => setNewBlog({ ...newBlog, author: target.value })}
-          />
-        </div>
-        <div>
-          url
-            <input
-            type="text"
-            value={newBlog.url}
-            name="BlogUrl"
-            onChange={({ target }) => setNewBlog({ ...newBlog, url: target.value })}
-          />
-        </div>
-        <button type="submit">create</button>
-      </form>
+      <p>{user.username} is logged in<button onClick={handleLogout}>logout</button></p>
+      {/* Show form based on state */}
+      {showCreateForm && (
+        <CreateNewBlogForm handleBlogCreate={handleBlogCreate} newBlog={newBlog} setNewBlog={setNewBlog} />
+      )}
+      {/* Button to toggle form visibility */}
+      <button onClick={() => setShowCreateForm(!showCreateForm)}>
+        {showCreateForm ? 'Cancel' : 'New blog'}
+      </button>
+
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
