@@ -1,0 +1,16 @@
+.notification {
+    padding: 10px;
+    margin: 10px;
+    border-radius: 4px;
+    transition: opacity 0.5s ease-out;
+  }
+  
+  .notification.success {
+    background-color: #4CAF50; /* Green */
+    color: black;
+  }
+  
+  .notification.error {
+    background-color: #f44336; /* Red */
+    color: black;
+  }
