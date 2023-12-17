@@ -1,21 +1,27 @@
+import React, { useState } from 'react'
+const CreateNewBlogForm = ({ handleBlogCreate }) => {
+  const [newBlog, setNewBlog] = useState({ title: '', author: '', url: '' })
 
-const CreateNewBlogForm = ({
-  handleBlogCreate,
-  newBlog,
-  setNewBlog
-  }) => {
-  
+  const handleChange = (target) => {
+    setNewBlog({ ...newBlog, [target.name]: target.value })
+  }
+  const handleSubmit = (event) => {
+    event.preventDefault()
+    handleBlogCreate(event, newBlog)
+    setNewBlog({ title: '', author: '', url: '' })
+  }
+
    return (
      <div>
        <h2>Create new</h2>
-      <form onSubmit={handleBlogCreate}>
+      <form onSubmit={handleSubmit}>
         <div>
           title
             <input
             type="text"
             value={newBlog.title}
-            name="BlogTitle"
-            onChange={({ target }) => setNewBlog({ ...newBlog, title: target.value })}
+            name="title"
+            onChange={({ target }) => handleChange(target)}
           />
         </div>
         <div>
@@ -23,8 +29,8 @@ const CreateNewBlogForm = ({
             <input
             type="text"
             value={newBlog.author}
-            name="BlogAuthor"
-            onChange={({ target }) => setNewBlog({ ...newBlog, author: target.value })}
+            name="author"
+            onChange={({ target }) => handleChange(target)}
           />
         </div>
         <div>
@@ -32,8 +38,8 @@ const CreateNewBlogForm = ({
             <input
             type="text"
             value={newBlog.url}
-            name="BlogUrl"
-            onChange={({ target }) => setNewBlog({ ...newBlog, url: target.value })}
+            name="url"
+            onChange={({ target }) => handleChange(target)}
           />
         </div>
         <button type="submit">create</button>

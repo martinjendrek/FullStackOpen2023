@@ -12,12 +12,12 @@ const App = () => {
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('') 
   const [user, setUser] = useState(null)
-  const [newBlog, setNewBlog] = useState({ title: '', author: '', url: '' })
+
   const [showCreateForm, setShowCreateForm] = useState(false)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
-      setBlogs( blogs )
+      setBlogs( blogs.sort((a,b) => b.likes - a.likes) )
     )  
   }, [])
   /*
@@ -65,19 +65,18 @@ const App = () => {
     setUser(null)
     setUsername('')
     setPassword('')
-    setNewBlog({ title: '', author: '', url: '' })
+    
     window.localStorage.removeItem('loggedBlogappUser')
   }
 
-  const handleBlogCreate = (event) => {
+  const handleBlogCreate = (event, newBlog) => {
     event.preventDefault()
     console.log('Adding blog ')
     blogService.create(newBlog).then(() => {
       setSuccessMessage(`A new blog ${newBlog.title} by ${newBlog.author} added`)
         setTimeout(() => {
           setSuccessMessage(null)
-        }, 5000)
-      setNewBlog({ title: '', author: '', url: '' })
+        }, 5000)      
       setShowCreateForm(!showCreateForm)
       blogService.getAll().then((updatedBlogs) => {
         setBlogs(updatedBlogs)
@@ -87,6 +86,19 @@ const App = () => {
     
   }
   
+  const updateBlogLikes = (blogId, updatedObject) => {
+    blogService.update(blogId, updatedObject)
+      .then(updatedBlog => {
+        setBlogs(prevBlogs => prevBlogs.map(blog => (blog.id === blogId ? updatedBlog : blog)))
+        console.log('Likes updated successfully:', updatedBlog)
+      })
+      .catch(error => {
+        console.error('Error updating likes:', error)
+      })
+  }
+
+
+
   const loginForm = () =>(
     <div>
       <h2> Log in to application</h2>
@@ -120,7 +132,7 @@ const App = () => {
       <p>{user.username} is logged in<button onClick={handleLogout}>logout</button></p>
       {/* Show form based on state */}
       {showCreateForm && (
-        <CreateNewBlogForm handleBlogCreate={handleBlogCreate} newBlog={newBlog} setNewBlog={setNewBlog} />
+        <CreateNewBlogForm handleBlogCreate={handleBlogCreate} />
       )}
       {/* Button to toggle form visibility */}
       <button onClick={() => setShowCreateForm(!showCreateForm)}>
@@ -128,7 +140,7 @@ const App = () => {
       </button>
 
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} updateBlogLikes={updateBlogLikes}/>
       )}
     </div>
   )
