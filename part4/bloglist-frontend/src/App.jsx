@@ -28,6 +28,7 @@ const App = () => {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
+      blogService.setToken(user.token)
     }
   }, [])
   /*
@@ -81,15 +82,13 @@ const App = () => {
       blogService.getAll().then((updatedBlogs) => {
         setBlogs(updatedBlogs)
       })
-    }
-    )
-    
+    })
   }
   
   const updateBlogLikes = (blogId, updatedObject) => {
     blogService.update(blogId, updatedObject)
       .then(updatedBlog => {
-        setBlogs(prevBlogs => prevBlogs.map(blog => (blog.id === blogId ? updatedBlog : blog)))
+        setBlogs(prevBlogs => prevBlogs.map(blog => (blog.id === blogId ? { ...updatedBlog, user: blog.user} : blog)))
         console.log('Likes updated successfully:', updatedBlog)
       })
       .catch(error => {
@@ -97,7 +96,21 @@ const App = () => {
       })
   }
 
-
+  const handleBlogRemove = (blogId) => {
+    blogService.remove(blogId)
+      .then(() => {
+        setSuccessMessage(`Blog removed successfully`)
+        setTimeout(() => {
+          setSuccessMessage(null)
+        }, 5000)
+        blogService.getAll().then((updatedBlogs) => {
+          setBlogs(updatedBlogs)
+        })
+      })
+      .catch(error => {
+        console.error('Error removing blog:', error)
+      })
+  }
 
   const loginForm = () =>(
     <div>
@@ -140,7 +153,7 @@ const App = () => {
       </button>
 
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} updateBlogLikes={updateBlogLikes}/>
+        <Blog key={blog.id} blog={blog} updateBlogLikes={updateBlogLikes} handleBlogRemove={handleBlogRemove} user={user}/>
       )}
     </div>
   )
